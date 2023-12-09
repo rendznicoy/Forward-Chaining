@@ -1,0 +1,19 @@
+with open(facts_filename, "r") as facts_file, open(rules_filename, "r") as rules_file:
+        existing_facts = set(fact.strip() for fact in facts_file.readlines())
+        existing_rules = [rule.strip() for rule in rules_file.readlines()]
+
+    new_facts = set()
+    
+    for rule in existing_rules:
+        conditions, then_statement = rule.split(" THEN ")
+        conditions = conditions[3:]  # Remove "IF " from the conditions
+        conditions = conditions.split(" AND ")
+        
+        if all(cond.strip() in existing_facts for cond in conditions):
+            new_facts.add(then_statement)
+
+    with open(facts_filename, 'a+', encoding='utf-8') as fact_file:
+        for fact in new_facts:
+            if fact not in existing_facts:
+                fact_file.write(fact + '\n')
+                existing_facts.add(fact)

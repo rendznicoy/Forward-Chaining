@@ -1,0 +1,39 @@
+def getCondition(rule: str):
+    conditions = rule.upper().split('IF')[1]
+    conditions = conditions.split('THEN')[0]
+    conditions = conditions.split('AND')
+    conditions = [cond.strip() for cond in conditions]
+
+    return conditions
+
+def getConclusion(rule):
+    conclusions = rule.upper().split('IF')[1]
+    conclusions = conclusions.split('THEN')[1]
+
+    return conclusions.strip()
+
+with open(facts_filename, "r") as facts_file, open(rules_filename, "r") as rules_file:
+            existing_facts = [fact.strip() for fact in facts_file.readlines()]
+            existing_rules = [rule.strip() for rule in rules_file.readlines()]
+            
+        while True:
+            new_facts = []
+
+            for r in existing_rules:
+                conditions = getCondition(r)
+                conclusions = getConclusion(r)
+        
+            if conclusions in existing_facts:
+                continue
+
+            if all([cond in existing_facts for cond in conditions]):
+                new_facts.append(conclusions)
+ 
+            with open(facts_filename, 'a+', encoding='utf-8') as fact_file:
+                for fact in new_facts:
+                    if fact not in existing_facts:
+                        fact_file.writelines(fact + '\n')
+                        existing_facts.append(fact)
+            
+            if len(new_facts) == 0:
+                break
